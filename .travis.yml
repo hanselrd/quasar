@@ -1,11 +1,4 @@
 language: c
-before_install:
-  - eval "${MATRIX_EVAL}"
-  - cmake
-install:
-  - make
-script:
-  - ctest -V
 matrix:
   include:
     - os: linux
@@ -19,3 +12,10 @@ matrix:
             - cmake
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+before_install:
+  - eval "${MATRIX_EVAL}"
+install:
+  - cmake .
+  - make
+script:
+  - ctest -V

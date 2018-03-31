@@ -1,3 +1,11 @@
+language: c
+before_install:
+  - eval "${MATRIX_EVAL}"
+  - cmake
+install:
+  - make
+script:
+  - ctest -V
 matrix:
   include:
     - os: linux
@@ -5,21 +13,9 @@ matrix:
         apt:
           sources:
             - ubuntu-toolchain-r-test
-            - nschloe-cmake-nightly
+            - sourceline: 'ppa:nschloe/cmake-nightly'
           packages:
             - g++-7
             - cmake
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
-language: c
-before_install:
-  - eval "${MATRIX_EVAL}"
-  - mkdir build
-  - cd build
-  - cmake ..
-install:
-  - cd build
-  - make
-script:
-  - cd build
-  - ctest -V

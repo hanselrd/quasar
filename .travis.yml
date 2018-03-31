@@ -11,7 +11,7 @@ matrix:
             - g++-7
             - cmake
       env:
-        - CC=gcc-7 && CXX=g++-7
+        - CC=gcc-7 CXX=g++-7
 install:
   - cmake .
   - make

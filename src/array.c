@@ -21,6 +21,12 @@ qua_array *qua_array_create(size_t size) {
   return NULL;
 }
 
+size_t qua_array_size(qua_array* qa) {return 0;}
+
+void *qua_array_get(qua_array* qa, size_t index) {return NULL;}
+
+bool qua_array_set(qua_array* qa, size_t index, void *data) {return false;}
+
 void qua_array_destroy(qua_array *qa) {
   if (qa != NULL) {
     if (qa->data != NULL) {

@@ -1,54 +1,63 @@
-import ctypes
-import unittest
+import pytest
 
-libq = ctypes.CDLL('build/src/libquasar.so')
+@pytest.mark.usefixtures("libq")
+class Safe:
+  def __init__(self, libq, size):
+    self.libq = libq
+    self.ptr = libq.qua_array_create(size)
 
-libq.qua_array_create.restype = ctypes.c_void_p
-libq.qua_array_get.restype = ctypes.c_void_p
+  def __del__(self):
+    if self.ptr != None:
+      self.libq.qua_array_destroy(self.ptr)
 
-class ArrayTest(unittest.TestCase):
-  def setUp(self):
-    self.qa = libq.qua_array_create(5)
+@pytest.fixture()
+def qa(request, libq):
+  return Safe(libq, request.param)
 
-  def tearDown(self):
-    if self.qa != 0:
-      libq.qua_array_destroy(self.qa)
+@pytest.mark.parametrize('size', [
+  pytest.param(0, marks=pytest.mark.xfail(strict=True)),
+  1,
+  2,
+  3,
+  4
+])
+def test_qua_array_create(libq, size):
+  assert libq.qua_array_create(size) != None
 
-  def test_qua_array_create(self):
-    # size: 0 => NULL
-    self.assertEqual(libq.qua_array_create(0), None)
-    # size: >0 => valid
-    self.assertNotEqual(libq.qua_array_create(1), None)
+@pytest.mark.parametrize('qa, expected', [
+  (0, 0),
+  (1, 1),
+  (2, 2),
+  (3, 3),
+  (4, 4),
+], indirect=['qa'])
+def test_qua_array_size(libq, qa, expected):
+  assert libq.qua_array_size(qa.ptr) == expected
 
-  def test_qua_array_size(self):
-    # qa: NULL => 0
-    self.assertEqual(libq.qua_array_size(None), 0)
-    # qa: valid => !0
-    self.assertEqual(libq.qua_array_size(self.qa), 5)
+@pytest.mark.parametrize('qa, index, val, expected', [
+  (0, 0, 12, None),
+  (1, 0, 12, 12),
+  (1, 1, 12, None)
+], indirect=['qa'])
+def test_qua_array_get(libq, qa, index, val, expected):
+  libq.qua_array_set(qa.ptr, index, val)
+  assert libq.qua_array_get(qa.ptr, index) == expected
 
-  def test_qua_array_get(self):
-    # qa: NULL => NULL
-    self.assertEqual(libq.qua_array_get(None, 0), None)
-    # qa: valid, index: >size => NULL
-    self.assertEqual(libq.qua_array_get(self.qa, 5), None)
-    # qa: valid, index: valid => object
-    libq.qua_array_set(self.qa, 0, 1337)
-    self.assertEqual(libq.qua_array_get(self.qa, 0), 1337)
+@pytest.mark.parametrize('qa, index, val, expected', [
+  (0, 0, 12, False),
+  (1, 0, 12, True),
+  (1, 1, 12, False)
+], indirect=['qa'])
+def test_qua_array_set(libq, qa, index, val, expected):
+  assert libq.qua_array_set(qa.ptr, index, val) == expected
 
-  def test_qua_array_set(self):
-    # qa: NULL => false
-    self.assertEqual(libq.qua_array_set(None, 0, None), False)
-    # qa: valid, index: >size => false
-    self.assertEqual(libq.qua_array_set(self.qa, 5, 111), False)
-    # qa: valid, index: valid => true
-    self.assertEqual(libq.qua_array_set(self.qa, 0, 222), True)
-    self.assertEqual(libq.qua_array_set(self.qa, 1, 333), True)
-    self.assertEqual(libq.qua_array_get(self.qa, 0), 222)
-    self.assertEqual(libq.qua_array_get(self.qa, 1), 333)
-
-  def test_qua_array_destroy(self):
-    # qa: NULL => false
-    self.assertEqual(libq.qua_array_destroy(None), False)
-    # qa: valid => true
-    self.assertEqual(libq.qua_array_destroy(self.qa), True)
-    self.qa = None
+@pytest.mark.parametrize('qa, expected', [
+  (0, False),
+  (1, True),
+  (2, True),
+  (3, True),
+  (4, True),
+], indirect=['qa'])
+def test_qua_array_destroy(libq, qa, expected):
+  assert libq.qua_array_destroy(qa.ptr) == expected
+  qa.ptr = None

@@ -14,6 +14,6 @@ void *qua_array_get(qua_array* qa, size_t index);
 
 bool qua_array_set(qua_array* qa, size_t index, void *data);
 
-void qua_array_destroy(qua_array *qa);
+bool qua_array_destroy(qua_array *qa);
 
 #endif

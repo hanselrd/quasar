@@ -13,8 +13,11 @@ matrix:
             - cmake
       env:
         - CC=gcc-7 CXX=g++-7
+before_install:
+  - mkdir build
+  - cd build
 install:
-  - cmake .
+  - cmake ..
   - make
 script:
   - ctest -V

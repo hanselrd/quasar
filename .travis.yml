@@ -9,7 +9,6 @@ matrix:
             - sourceline: 'ppa:nschloe/cmake-nightly'
           packages:
             - g++-7
-            - valgrind
             - cmake
       env:
         - CC=gcc-7 CXX=g++-7

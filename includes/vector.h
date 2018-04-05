@@ -4,11 +4,11 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-typedef struct _qua_vector qua_vector;
+typedef void qua_vector;
 
 qua_vector *qua_vector_create(size_t init_cap);
 
-size_t qua_vector_size(qua_vector* qv);
+int qua_vector_size(qua_vector* qv);
 
 void *qua_vector_get(qua_vector* qv, size_t index);
 

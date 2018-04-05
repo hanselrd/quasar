@@ -1,10 +1,10 @@
 #include "array.h"
 #include <stdlib.h>
 
-struct _qua_array {
+typedef struct {
   size_t size;
   void **data;
-};
+} qua_array;
 
 qua_array *qua_array_create(size_t size) {
   if (size > 0) {

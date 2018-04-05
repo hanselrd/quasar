@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-typedef struct _qua_array qua_array;
+typedef void qua_array;
 
 qua_array *qua_array_create(size_t size);
 

@@ -24,12 +24,12 @@ def qv(request, libq):
 def test_qua_vector_create(libq, init_cap):
   assert libq.qua_vector_create(init_cap) != None
 
-# @pytest.mark.parametrize('qv, expected', [
-#   (0, 0),
-#   (1, 0),
-#   (2, 0),
-#   (3, 0),
-#   (4, 0),
-# ], indirect=['qv'])
-# def test_qua_vector_size(libq, qv, expected):
-#   assert libq.qua_vector_size(qv.ptr) == expected
+@pytest.mark.parametrize('qv, expected', [
+  (0, -1),
+  (1, 0),
+  (2, 0),
+  (3, 0),
+  (4, 0),
+], indirect=['qv'])
+def test_qua_vector_size(libq, qv, expected):
+  assert libq.qua_vector_size(qv.ptr) == expected
